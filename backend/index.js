@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -11,7 +12,20 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret_demo';
 app.use(cors());
 app.use(bodyParser.json());
 
-// Usuarios demo
+// =========================
+//   FRONTEND (React/Vite)
+// =========================
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
+// =========================
+//     Usuarios demo
+// =========================
+
 const users = [
   { id: 1, username: 'admin', password: 'admin123', role: 'SuperUsuario' },
   { id: 2, username: 'profesor', password: 'prof123', role: 'Profesor' }
@@ -20,7 +34,10 @@ const users = [
 let favorites = [];
 let nextFavId = 1;
 
-// LOGIN
+// =========================
+//         LOGIN
+// =========================
+
 app.post('/auth/login', (req, res) => {
   const { username, password } = req.body;
   const user = users.find(
@@ -35,7 +52,10 @@ app.post('/auth/login', (req, res) => {
   res.json({ token, user: payload });
 });
 
-// MIDDLEWARE JWT
+// =========================
+//     MIDDLEWARE JWT
+// =========================
+
 function auth(req, res, next) {
   const header = req.headers["authorization"];
   const token = header && header.split(" ")[1];
@@ -49,7 +69,10 @@ function auth(req, res, next) {
   });
 }
 
-// FAVORITOS
+// =========================
+//        FAVORITOS
+// =========================
+
 app.get("/favorites", auth, (req, res) => {
   res.json(favorites);
 });
@@ -87,7 +110,10 @@ app.delete("/favorites/:id", auth, (req, res) => {
   res.json({ message: "Eliminado" });
 });
 
-// SERVIDOR
+// =========================
+//        SERVIDOR
+// =========================
+
 app.listen(PORT, () =>
-  console.log(`API privada corriendo en http://localhost:${PORT}`)
+  console.log(`Servidor corriendo en el puerto ${PORT}`)
 );
