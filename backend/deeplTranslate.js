@@ -1,26 +1,31 @@
+// backend/deeplTranslate.js
+
 import fetch from "node-fetch";
 
+// TOKEN PRIVADO DE DEEPL (SEGURO EN BACKEND)
 const DEEPL_KEY = "206268c0-ec95-46d4-aaa2-9b4fd0857334:fx";
 
+// Función para traducir texto
 export async function translateText(text, target = "ES") {
   const url = "https://api-free.deepl.com/v2/translate";
 
-  const params = new URLSearchParams();
-  params.append("auth_key", DEEPL_KEY);
-  params.append("text", text);
-  params.append("target_lang", target);
-
   const res = await fetch(url, {
     method: "POST",
-    body: params
+    headers: {
+      "Authorization": `DeepL-Auth-Key ${DEEPL_KEY}`,
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      text: text,
+      target_lang: target
+    })
   });
 
   const data = await res.json();
 
-  if (data.translations) {
-    return data.translations[0].text;
+  if (!data.translations) {
+    return "No se pudo traducir.";
   }
 
-  console.log("DeepL error:", data);
-  throw new Error("DeepL no devolvió una traducción");
+  return data.translations[0].text;
 }

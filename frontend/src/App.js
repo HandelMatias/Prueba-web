@@ -72,7 +72,7 @@ export default function App() {
       {/* HEADER CON LOGO + BUSCADOR */}
       <header className="header-netflix">
         <div className="header-left">
-          <h1>EduBook</h1>
+          <h1>EduPlan</h1>
 
           {/* BUSCADOR CON ÍCONO */}
           <div className="header-search">

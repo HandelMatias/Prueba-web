@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
 
 export default function Modal({ open, book, onClose, onAdd }) {
-  const [description, setDescription] = useState("Cargando...");
-  const [translated, setTranslated] = useState("");
-  const [loadingTranslation, setLoadingTranslation] = useState(false);
+  const [description, setDescription] = useState("Cargando descripción...");
+  const [translated, setTranslated] = useState("Traduciendo...");
 
   useEffect(() => {
-    if (book) {
-      setTranslated("");
-      loadDescription();
-    }
+    if (book) loadDescription();
   }, [book]);
 
   async function loadDescription() {
+    setDescription("Cargando descripción...");
+    setTranslated("Traduciendo...");
+
     try {
       if (!book.key) {
         setDescription("No hay descripción disponible.");
+        setTranslated("No hay descripción disponible.");
         return;
       }
 
+      // Obtener descripción original
       const workId = book.key.replace("/works/", "");
       const url = `https://openlibrary.org/works/${workId}.json`;
 
@@ -32,39 +33,22 @@ export default function Modal({ open, book, onClose, onAdd }) {
 
       setDescription(desc);
 
-    } catch (err) {
-      setDescription("Error al cargar descripción.");
-    }
-  }
-
-  async function translateNow() {
-    if (!description || description === "No disponible.") {
-      setTranslated("No hay texto para traducir.");
-      return;
-    }
-
-    try {
-      setLoadingTranslation(true);
-
-      const res = await fetch("http://localhost:4000/translate", {
+      // ===== Traducir desde tu backend =====
+      const tr = await fetch("http://localhost:4000/translate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: description })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: desc })
       });
 
-      const data = await res.json();
+      const trData = await tr.json();
+      setTranslated(trData.translated);
 
-      if (data.translated) {
-        setTranslated(data.translated);
-      } else {
-        setTranslated("Error al traducir");
-      }
-
-    } catch (err) {
-      setTranslated("Error al traducir");
+    } catch (e) {
+      setDescription("Error al cargar.");
+      setTranslated("Error al traducir.");
     }
-
-    setLoadingTranslation(false);
   }
 
   if (!open || !book) return null;
@@ -88,23 +72,11 @@ export default function Modal({ open, book, onClose, onAdd }) {
             {book.author_name ? book.author_name.join(", ") : "Autor desconocido"}
           </p>
 
-          <h3>Descripción:</h3>
+          <h3>Descripción original:</h3>
           <p className="modal-desc">{description}</p>
 
-          <button 
-            className="btn-primary" 
-            onClick={translateNow}
-            disabled={loadingTranslation}
-          >
-            {loadingTranslation ? "Traduciendo..." : "Traducir al español"}
-          </button>
-
-          {translated && (
-            <>
-              <h3>Traducción:</h3>
-              <p className="modal-desc">{translated}</p>
-            </>
-          )}
+          <h3>Descripción traducida:</h3>
+          <p className="modal-desc">{translated}</p>
 
           <div className="modal-buttons">
             <button className="btn-primary" onClick={() => onAdd(book)}>

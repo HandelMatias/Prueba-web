@@ -1,50 +1,50 @@
+// backend/server.js
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { translateText } from "./deeplTranslate.js";
 
 const app = express();
-
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
+app.use(cors());
 app.use(bodyParser.json());
 
-// ================= FAVORITOS =================
+// ===== FAVORITOS EN MEMORIA =====
 let favorites = [];
 
-app.post("/favorites", (req, res) => {
-  const { name, book } = req.body;
+// ===== LOGIN SIMPLE =====
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
 
-  if (!name || !book) {
-    return res.status(400).json({ error: "Datos incompletos" });
+  if (email === "admin@gmail.com" && password === "123") {
+    return res.json({
+      token: "fake-jwt-token",
+      user: { name: "Admin" }
+    });
   }
 
-  favorites.push(req.body);
-  res.json({ msg: "Guardado correctamente" });
+  res.status(401).json({ error: "Credenciales incorrectas" });
 });
 
+// ===== GUARDAR FAVORITOS =====
+app.post("/favorites", (req, res) => {
+  favorites.push(req.body);
+  res.json({ msg: "Guardado" });
+});
+
+// ===== LISTAR FAVORITOS =====
 app.get("/favorites", (req, res) => {
   res.json(favorites);
 });
 
-// ================= TRADUCCIÓN =================
+// ===== 🔥 NUEVO ENDPOINT: TRADUCIR DESCRIPCIÓN =====
 app.post("/translate", async (req, res) => {
   const { text } = req.body;
-
-  if (!text) {
-    return res.status(400).json({ error: "Texto vacío" });
-  }
 
   try {
     const translated = await translateText(text);
     res.json({ translated });
-  } catch (err) {
-    console.log("ERROR DEEPL:", err);
-    res.status(500).json({ error: "Error traduciendo" });
+  } catch (e) {
+    res.status(500).json({ error: "Error al traducir" });
   }
 });
 
