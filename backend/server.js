@@ -5,7 +5,14 @@ import bodyParser from "body-parser";
 import { translateText } from "./deeplTranslate.js";
 
 const app = express();
-app.use(cors());
+
+// CORS para producción
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
+
 app.use(bodyParser.json());
 
 // ===== FAVORITOS EN MEMORIA =====
@@ -36,7 +43,7 @@ app.get("/favorites", (req, res) => {
   res.json(favorites);
 });
 
-// ===== 🔥 NUEVO ENDPOINT: TRADUCIR DESCRIPCIÓN =====
+// ===== TRADUCIR DESCRIPCIÓN =====
 app.post("/translate", async (req, res) => {
   const { text } = req.body;
 
@@ -48,6 +55,9 @@ app.post("/translate", async (req, res) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log("Backend corriendo en http://localhost:4000");
+// PUERTO DINÁMICO PARA RENDER
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Backend corriendo en puerto ${PORT}`);
 });
