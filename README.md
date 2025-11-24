@@ -1,4 +1,4 @@
-# 📚 EduPlan – Buscador de Libros + Descripciones Traducidas  
+# 📚 EduBook – Buscador de Libros + Descripciones Traducidas  
 Frontend en **React + Vite**, backend en **Node/Express**, desplegado en **Netlify + Render**
 
 ---
