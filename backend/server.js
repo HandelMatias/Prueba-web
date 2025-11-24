@@ -58,6 +58,43 @@ app.post("/translate", async (req, res) => {
 // PUERTO DINÁMICO PARA RENDER
 const PORT = process.env.PORT || 4000;
 
+// ===== OBTENER Y TRADUCIR DESCRIPCIÓN DE UN LIBRO =====
+import fetch from "node-fetch";
+
+app.get("/books/:id/description", async (req, res) => {
+  const id = req.params.id;
+  const target = req.query.target || "es";
+
+  try {
+    // 1. Sí existe descripción en OpenLibrary
+    const url = `https://openlibrary.org/works/${id}.json`;
+    const r = await fetch(url);
+    const data = await r.json();
+
+    const description =
+      data.description?.value ||
+      data.description ||
+      "Descripción no disponible.";
+
+    // 2. Traducir usando tu propio endpoint /translate
+    const tr = await fetch("https://prueba-web-h7w2.onrender.com/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: description })
+    });
+
+    const translatedData = await tr.json();
+
+    res.json({
+      description,
+      translated: translatedData.translated
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "No se pudo obtener la descripción" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Backend corriendo en puerto ${PORT}`);
 });
