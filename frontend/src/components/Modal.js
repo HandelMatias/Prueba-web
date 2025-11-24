@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-export default function Modal({ open, book, onClose, onAdd }) {
+export default function Modal({ open, book, onClose, backend }) {
   const [description, setDescription] = useState("Cargando descripción...");
   const [translated, setTranslated] = useState("Traduciendo...");
+  const apiBase = backend || "http://localhost:4000";
 
   useEffect(() => {
     if (book) loadDescription();
@@ -19,32 +20,15 @@ export default function Modal({ open, book, onClose, onAdd }) {
         return;
       }
 
-      // Obtener descripción original
       const workId = book.key.replace("/works/", "");
-      const url = `https://openlibrary.org/works/${workId}.json`;
 
-      const res = await fetch(url);
+      // API privada obtiene descripción (OpenLibrary) y traduce en el backend
+      const res = await fetch(`${apiBase}/books/${workId}/description?target=es`);
+      if (!res.ok) throw new Error("Falló al obtener descripción");
+
       const data = await res.json();
-
-      let desc = "No disponible.";
-
-      if (typeof data.description === "string") desc = data.description;
-      else if (data.description?.value) desc = data.description.value;
-
-      setDescription(desc);
-
-      // ===== Traducir desde tu backend =====
-      const tr = await fetch("http://localhost:4000/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text: desc })
-      });
-
-      const trData = await tr.json();
-      setTranslated(trData.translated);
-
+      setDescription(data.description || "No disponible.");
+      setTranslated(data.translated || data.description || "Sin traducción");
     } catch (e) {
       setDescription("Error al cargar.");
       setTranslated("Error al traducir.");
@@ -79,10 +63,6 @@ export default function Modal({ open, book, onClose, onAdd }) {
           <p className="modal-desc">{translated}</p>
 
           <div className="modal-buttons">
-            <button className="btn-primary" onClick={() => onAdd(book)}>
-              + Agregar a Favoritos
-            </button>
-
             <button className="btn-outline" onClick={onClose}>
               Cerrar
             </button>

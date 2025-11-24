@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export default function Carousel({ title, url, onAdd, onDetails }) {
+export default function Carousel({ title, url, onDetails }) {
   const [items, setItems] = useState([]);
   const boxRef = useRef(null);
   const scrollInterval = useRef(null);
@@ -60,15 +60,7 @@ export default function Carousel({ title, url, onAdd, onDetails }) {
 
             <div className="carousel-overlay">
               <strong>{b.title}</strong>
-
-              <button className="btn-small" onClick={() => onAdd(b)}>
-                + Agregar a Favoritos
-              </button>
-
-              <button
-                className="btn-small btn-outline"
-                onClick={() => onDetails(b)}
-              >
+              <button className="btn-small btn-outline" onClick={() => onDetails(b)}>
                 Ver más detalles
               </button>
             </div>

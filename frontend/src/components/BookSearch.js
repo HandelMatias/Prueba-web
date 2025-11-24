@@ -1,7 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 
-export default function BookSearch({ backend, token, prefilledQuery = "" }) {
-
+export default function BookSearch({ prefilledQuery = "" }) {
   const [books, setBooks] = useState([]);
   const [msg, setMsg] = useState("");
 
@@ -29,20 +29,6 @@ export default function BookSearch({ backend, token, prefilledQuery = "" }) {
     return "https://via.placeholder.com/100x150?text=No+Cover";
   }
 
-  async function save(book) {
-    const res = await fetch(`${backend}/favorites`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({ name: book.title, book })
-    });
-
-    if (!res.ok) setMsg("Error al guardar");
-    else setMsg("Guardado!");
-  }
-
   return (
     <div className="card">
       <h2>Resultados</h2>
@@ -55,16 +41,10 @@ export default function BookSearch({ backend, token, prefilledQuery = "" }) {
 
           <div style={{ flex: 1 }}>
             <div className="book-title">{b.title}</div>
-            <div className="book-author">
-              {b.author_name ? b.author_name.join(", ") : "Desconocido"}
-            </div>
-          </div>
-
-          <div className="action-btns">
-            <button onClick={() => save(b)}>Guardar</button>
           </div>
         </div>
       ))}
     </div>
   );
 }
+
