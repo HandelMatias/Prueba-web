@@ -32,7 +32,7 @@ export default function App() {
     <div className="container">
       <header className="header-netflix">
         <div className="header-left">
-          <h1>EduPlan</h1>
+          <h1>EduBook</h1>
 
           <div className="header-search">
             <span className="search-icon">🔍</span>
