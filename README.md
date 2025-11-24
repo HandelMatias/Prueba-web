@@ -12,8 +12,7 @@ Frontend en **React + Vite**, backend en **Node/Express**, desplegado en **Netli
 - Abrir un modal con información detallada
 - Obtener la **descripción original** del libro
 - Traducirla automáticamente al español mediante un backend propio
-- Guardar libros como favoritos (en memoria temporal)
-- Iniciar sesión con un login simple
+
 
 El proyecto se divide en dos partes:
 
