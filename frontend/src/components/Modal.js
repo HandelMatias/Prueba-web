@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 export default function Modal({ open, book, onClose, backend }) {
   const [description, setDescription] = useState("Cargando descripción...");
   const [translated, setTranslated] = useState("Traduciendo...");
-  const apiBase = backend || "http://localhost:4000";
+  const apiBase = backend || "https://prueba-web-h7w2.onrender.com";
 
   useEffect(() => {
     if (book) loadDescription();

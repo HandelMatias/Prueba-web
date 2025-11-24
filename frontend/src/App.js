@@ -3,7 +3,7 @@ import Carousel from './components/Carousel';
 import Modal from './components/Modal';
 import BookSearch from './components/BookSearch'; // ahora sin input
 
-const BACKEND = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+const BACKEND = process.env.REACT_APP_BACKEND_URL || "https://prueba-web-h7w2.onrender.com";
 
 export default function App() {
   // Buscador del header
